@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 15s       # how often to pull metrics
+  evaluation_interval: 15s   # how often to evaluate alerting rules
+
+scrape_configs:
+  - job_name: 'payment-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      # When running the full stack via docker compose, the backend container
+      # is reachable as `backend:8080` on the compose network.
+      # If you instead run the backend on the host (./gradlew bootRun) and only
+      # the infra in compose, swap to `host.docker.internal:8080` (Docker
+      # Desktop on Mac/Windows) or your host IP on Linux.
+      - targets: ['backend:8080']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+        replacement: 'payment-service'
